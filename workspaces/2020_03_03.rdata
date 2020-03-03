@@ -1,0 +1,30 @@
+#wlaczenie bibliotek
+library(tm)
+
+#zmiana katalogu roboczego
+workDir <- "D:\\194925\\PJN\\TextMining"
+setwd(workDir)
+
+#definicja katalogu projektu
+inputDir <- ".\\data"
+outputDir <- ".\\results"
+skriptDir <- ".\\scripts"
+workspaceDir <- ".\\workspaces"
+
+dir.create(outputDir, showWarnings = FALSE)
+
+#utworzenie korpusu dokumentow
+corpusDir <- paste(inputDir,"\\","Literatura streszczenia orginal",sep ="")
+corpus <- VCorpus(
+  DirSource(corpusDir,pattern = "*.txt", encoding = "UTF-8"),
+  readerControl = list(language = "pl_PL")
+  )
+
+#wstepne przetwarzanie
+corpus <- tm_map(corpus, removeNumbers)
+corpus <- tm_map(corpus, removePunctuation)
+corpus <- tm_map(corpus, content_transformer(tolower))
+stoplistFile <- paste(inputDir,"\\","stopwords_pl.txt",sep ="")
+stoplist <- readLines(stoplistFile,encoding = "UTF-8")
+corpus <- tm_map(corpus, removeWords,stoplist)
+corpus <- tm_map(corpus, stripWhitespace)
